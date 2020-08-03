@@ -2,7 +2,7 @@
   "profiles": {
     "HtmlToVideo": {
       "commandName": "Project",
-      "commandLineArgs": "https://loable.tech test.webm 1920 1080 10 \"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe\""
+      "commandLineArgs": "https://loable.tech test.webm 1080 2000 30 \"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe\""
     }
   }
 }

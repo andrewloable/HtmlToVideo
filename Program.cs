@@ -37,14 +37,14 @@ namespace HtmlToVideo
             {
                 Headless = false,
                 Args = new string[] {
+                    "--app",
                     "--enable-usermedia-screen-capturing",
                     "--allow-http-screen-capture",
                     "--auto-select-desktop-capture-source=screencap",
                     "--load-extension=" + Path.Combine(Directory.GetCurrentDirectory(), "ext"),
                     "--disable-extensions-except=" + Path.Combine(Directory.GetCurrentDirectory(), "ext"),
-                    "--disable-infobars",
-                    "--force-device-scale-factor=1",
-                    $"--window-size={width},{height}"
+                    "--force-device-scale-factor=1",                    
+                    $"--window-size={width+10},{height+200}"
                 }
             };
 
@@ -59,7 +59,7 @@ namespace HtmlToVideo
             Console.WriteLine("Opening Url...");
             var browser = await Puppeteer.LaunchAsync(options);
             var page = await browser.NewPageAsync();
-            await page.Client.SendAsync("Emulation.clearDeviceMetricsOverride");
+            await page.Client.SendAsync("Emulation.clearDeviceMetricsOverride");            
             await page.SetViewportAsync(new ViewPortOptions
             {
                 Width = width,
@@ -68,13 +68,14 @@ namespace HtmlToVideo
             });
             await page.GoToAsync(url);
             await page.SetBypassCSPAsync(true);
-            await page.EvaluateExpressionAsync($"window.postMessage({{type: 'SET_EXPORT_PATH', filename: '{filename}'}}, '*')");
+            await page.EvaluateExpressionAsync($"window.postMessage({{type: 'SET_PARAMETERS', filename: '{filename}', width: {width}, height: {height}}}, '*')");
+            
             Console.WriteLine("Recording...");
             await page.WaitForTimeoutAsync(seconds * 1000);
             await page.EvaluateExpressionAsync("window.postMessage({type: 'REC_STOP'}, '*')");
             await page.WaitForTimeoutAsync(2000);
             await browser.CloseAsync();
-            Console.WriteLine("You video should be in your Downloads folder.");
+            Console.WriteLine("Your video should be in your Downloads folder.");
         }
 
         private static void ShowHelp(string[] args)
